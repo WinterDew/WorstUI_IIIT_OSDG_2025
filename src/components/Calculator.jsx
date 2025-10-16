@@ -7,10 +7,11 @@ function Calculator() {
   const [positions, setPositions] = useState({});
 
   const buttons = ["7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "0", "C", "=", "+"];
+  const fakeButtons = ["6'", "9'", "4'", "2'", "0'"]; 
 
   const randomPos = () => {
-    const maxX = window.innerWidth - 100;
-    const maxY = window.innerHeight - 100;
+    const maxX = window.innerWidth - 120;
+    const maxY = window.innerHeight - 120;
     return {
       x: Math.floor(Math.random() * maxX) + "px",
       y: Math.floor(Math.random() * maxY) + "px",
@@ -20,14 +21,20 @@ function Calculator() {
   const shufflePositions = () => {
     const newPositions = {};
     newPositions["result"] = randomPos();
+
     buttons.forEach((btn) => {
       newPositions[btn] = randomPos();
     });
+
+    fakeButtons.forEach((fake) => {
+      newPositions[fake] = randomPos();
+    });
+
     setPositions(newPositions);
   };
 
   useEffect(() => {
-    shufflePositions(); // initial positions
+    shufflePositions(); 
   }, []);
 
   const handleClick = (label) => {
@@ -35,7 +42,6 @@ function Calculator() {
       setExpression("0");
     } else if (label === "=") {
       try {
-        // eslint-disable-next-line no-eval
         setExpression(eval(expression).toString());
       } catch {
         setExpression("Error");
@@ -43,7 +49,8 @@ function Calculator() {
     } else {
       setExpression((prev) => (prev === "0" ? label : prev + label));
     }
-    shufflePositions(); 
+
+    shufflePositions();
   };
 
   return (
@@ -63,6 +70,16 @@ function Calculator() {
           x={positions[btn]?.x}
           y={positions[btn]?.y}
           onClick={() => handleClick(btn)}
+        />
+      ))}
+
+      {fakeButtons.map((key) => (
+        <CalcButtons
+          key={`fake-${key}`}
+          label={key}
+          x={positions[key]?.x}
+          y={positions[key]?.y}
+          isFake={true}
         />
       ))}
     </div>
